@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>geologicalDisasterWarning</display-name>
+	<!-- 基于CAS进行单点登录的过滤器配置代码 -->
+	<!-- SANXIASERVER1为CAS Server的机器名，要求各个Web服务器能够ping通CAS Server的机器名 -->
+	<!-- 采用第三方登录界面登录用过滤器配置，此配置与后面的配置同时使用 start-->
+	<filter>
+		<filter-name>CAS Single Sign Out Filter</filter-name>
+		<filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
+	</filter>
+	
+	<filter>
+		<filter-name>CAS Authentication Filter</filter-name>
+		<filter-class>
+			org.jasig.cas.client.authentication.RemoteAuthenticationFilter
+		</filter-class>
+		<init-param>
+			<param-name>localLoginUrl</param-name>
+			<param-value>
+				http://11.10.51.68:8188/DMGeoPortal/login.jsp
+			</param-value>
+		</init-param>
+		<init-param>
+			<param-name>casServerLoginUrl</param-name>
+			<param-value>
+				http://11.10.51.68:8188/DMGeoSSO/remoteLogin
+			</param-value>
+		</init-param>
+		<init-param>
+			<!-- 本应用系统所在web服务器的ip地址及端口号 -->
+			<param-name>serverName</param-name>
+			<param-value>http://11.10.51.68:8188</param-value>
+		</init-param>
+		<init-param>
+			<!-- Web服务的url地址前缀，只能是唯一的 -->
+			<param-name>webServicePath</param-name>
+			<param-value>/services/</param-value>
+		</init-param>
+		<init-param>
+			<!-- 公共操作Action的url地址前缀，只能是唯一的 -->
+			<param-name>commonActionPath</param-name>
+			<param-value>/ws/</param-value>
+		</init-param>
+		<init-param>
+			<!-- 公共资源的url地址前缀，这个主要是公共操作Action对应的jsp页面使用的资源，可以是多个，用“;”隔开 -->
+			<param-name>commonResPath</param-name>
+			<param-value>/js/;/style/;/waf/user/photo/;/ui/;/sjgl/dataset_viewPortal.do;/uploadFile</param-value>
+		</init-param>
+		<init-param>
+			<!-- 公共Ajax操作Action的完整url地址，可以是多个，用“,”隔开 -->
+			<param-name>commonAjaxPath</param-name>
+			<param-value>
+				/DataWordAction.do?method=addword,
+				/DataWordAction.do?method=queryExplain,
+				/GlossaryAction.do?method=queryExplain,
+				/MenuAndDataAction.do?method=query,
+				/RegistUserAction,
+				/LoginPortalAction,
+				/ImageServlet,
+				/wmf/VerifyCode_changeImage.do,
+                /wmf/VerifyCode_checkVerifyCode.do,
+				/downloadFile,
+				/public/,
+				/images/
+			</param-value>
+		</init-param>
+		<init-param>
+			<!-- 公共的AMF地址，只能是唯一的 -->
+			<param-name>publicAmfPath</param-name>
+			<param-value>/spring/pub/</param-value>
+		</init-param>
+		<init-param>
+			<param-name>renew</param-name>
+			<param-value>false</param-value>
+		</init-param>
+		<init-param>
+			<param-name>gateway</param-name>
+			<param-value>false</param-value>
+		</init-param>
+	</filter>
+	<!-- 采用第三方登录界面登录用过滤器配置，此配置与后面的配置同时使用 end-->
+	
+	<!-- 上述两种认证方式公共的配置  start-->
+	<filter>
+		<filter-name>CAS Validation Filter</filter-name>
+		<filter-class>
+			org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter
+		</filter-class>
+		<init-param>
+			<param-name>casServerUrlPrefix</param-name>
+			<param-value>http://11.10.51.68:8188/DMGeoSSO/</param-value>
+		</init-param>
+		<!--本应有所在web服务器的ip地址及端口号-->
+		<init-param>			
+			<param-name>serverName</param-name>
+			<param-value>http://11.10.51.68:8188</param-value>
+		</init-param>
+		<!--
+		<init-param>
+            <param-name>useSession</param-name>
+            <param-value>true</param-value>
+        </init-param>-->
+		<init-param>
+            <param-name>exceptionOnValidationFailure</param-name>
+            <param-value>false</param-value>
+        </init-param>
+
+        <init-param>
+            <param-name>redirectAfterValidation</param-name>
+            <param-value>true</param-value>
+        </init-param>
+	</filter>
+	
+	<filter>
+		<filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+		<filter-class>
+			org.jasig.cas.client.util.HttpServletRequestWrapperFilter
+		</filter-class>
+	</filter>
+	
+	<filter>
+		<filter-name>CAS Assertion Thread Local Filter</filter-name>
+		<filter-class>
+			org.jasig.cas.client.util.AssertionThreadLocalFilter
+		</filter-class>
+	</filter>
+	<!-- 上述两种认证方式公共的配置  end-->
+	
+	<!-- 采用第三方登录界面登录用过滤器配置，此配置与前面的配置同时使用 -->
+	<filter-mapping>
+		<filter-name>CAS Single Sign Out Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>CAS Authentication Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>CAS Validation Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping> 
+	<filter-mapping>
+		<filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>CAS Assertion Thread Local Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+  <welcome-file-list>
+    <welcome-file>login.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <servlet>
+    <servlet-name>SingleUploadData</servlet-name>
+    <servlet-class>com.module.servlet.SingleUploadData</servlet-class>
+  </servlet>
+   
+  <servlet-mapping>
+        <servlet-name>SingleUploadData</servlet-name>
+        <url-pattern>/servlet/SingleUploadData</url-pattern>
+  </servlet-mapping>
+  
+</web-app>
